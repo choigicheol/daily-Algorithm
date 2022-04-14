@@ -58,7 +58,7 @@ function solution(dartResult) {
     "#": -1,
   };
 
-  let allScore = [];
+  let allScore = [0]; // 라운드와 배열 index 맞춰주기위한 더미값
   let score = "";
   let round = 0;
 
@@ -76,9 +76,9 @@ function solution(dartResult) {
         score = "";
         continue;
       } else if (oneResult === "*" && round > 1) {
-        allScore[round - 2] *= 2;
+        allScore[round - 1] *= 2;
       }
-      allScore[round - 1] *= mulData[oneResult];
+      allScore[round] *= mulData[oneResult];
       score = "";
     }
   }
