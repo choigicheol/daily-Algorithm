@@ -79,7 +79,6 @@ function solution(dartResult) {
         allScore[round - 1] *= 2;
       }
       allScore[round] *= mulData[oneResult];
-      score = "";
     }
   }
   return allScore.reduce((acc, cur) => {
