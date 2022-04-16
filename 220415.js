@@ -52,7 +52,6 @@ function solution(n, arr1, arr2) {
     .fill(0)
     .map((el) => Array(n).fill(" "));
 
-  // n=16, maxLen 또한 전체 16이라면 2중 for문은 시간복잡도가..
   for (let i = 0; i < n; i++) {
     const maxLen = Math.max(binaryArr1[i].length, binaryArr2[i].length);
 
