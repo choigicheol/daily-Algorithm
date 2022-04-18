@@ -59,21 +59,39 @@ function solution(N, stages) {
   // 각 스테이지의 실패율을 arr에 담아준다.
   let arrFailPer = [];
   for (let key in failStage) {
-    const percent = (failStage[key] / numOfUsers).toFixed(12);
-    console.log(percent);
+    // TODO: 퍼센트를 그냥 숫자로 담았을때는 통과 안되는 테스트 케이스가 있다.
+    // TODO: 문자열로 변환 후 넘겨주면 전체 통과 이유는?
+    // TODO: => 유저들이 낮은 스테이지에 모여있으면 높은 스테이지 실패율이 0/0이 되어서 NaN가 할당되어서 생기는 문제로 예상(0/0 = NaN)
+    // TODO: 값이 없으면 0을 할당하도록 수정하니까 전체 통과 됨
+
+    // const percent = String(failStage[key] / numOfUsers);
+    const percent = failStage[key] / numOfUsers || 0;
     arrFailPer.push(percent);
     numOfUsers -= failStage[key];
   }
 
+  // 퍼센트 배열을 복사하고 내림차순 sort 해준다.
   let sortFailPer = [...arrFailPer];
   sortFailPer.sort((a, b) => b - a);
 
+  // sort한 배열을 map 사용하여 실패율이 높은 순으로 arrFailPer 배열에서 idx를 찾는다(idx+1 = 스테이지);
   sortFailPer.map((sortPer) => {
     const stageIdx = arrFailPer.indexOf(sortPer);
-    console.log(sortPer);
     result.push(stageIdx + 1);
-    arrFailPer[stageIdx] = undefined;
+    arrFailPer[stageIdx] = null;
   });
-
   return result;
 }
+
+// * 보기 좋았던 좀 더 간결한 코드
+// (이중배열로 스테이지와 실패율을 같이 담고 sort할때 a[1]과 같은 식으로 이중배열안의 실패율율 기준으로 sort한 후 결과값 return은 map을 이용하여 스테이지만 return)
+// function solution(N, stages) {
+//   let result = [];
+//   for (let i = 1; i <= N; i++) {
+//     let reach = stages.filter((x) => x >= i).length;
+//     let curr = stages.filter((x) => x === i).length;
+//     result.push([i, curr / reach]);
+//   }
+//   result.sort((a, b) => b[1] - a[1]);
+//   return result.map((x) => x[0]);
+// }
