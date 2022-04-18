@@ -34,10 +34,10 @@ function solution(n, costs) {
 
   // 0,1 이 연결되고 2,3이 연결된 상태에서 0,2가 연결된다면?
   // 2를 부모로 가지고있는(2와 연결되어있는) 3 또한 0으로 바뀌어야한다.
-  const changeParent = (secondPar, firstPar) => {
+  const changeParent = (firstParent, secondParent) => {
     for (let i = 0; i < arrParent.length; i++) {
-      if (arrParent[i] === secondPar) {
-        arrParent[i] = firstPar;
+      if (arrParent[i] === secondParent) {
+        arrParent[i] = firstParent;
       }
     }
   };
@@ -56,7 +56,7 @@ function solution(n, costs) {
 
     if (firstParent !== secondParent) {
       if (arrParent.filter((el) => el === secondParent).length) {
-        changeParent(secondParent, firstParent);
+        changeParent(firstParent, secondParent);
       }
       secondParent = firstParent;
       sum += costs[i][2];
