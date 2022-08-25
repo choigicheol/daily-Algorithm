@@ -1,92 +1,204 @@
+// 순위 검색
+// 문제 설명
+// [본 문제는 정확성과 효율성 테스트 각각 점수가 있는 문제입니다.]
+
+// 카카오는 하반기 경력 개발자 공개채용을 진행 중에 있으며 현재 지원서 접수와 코딩테스트가 종료되었습니다. 이번 채용에서 지원자는 지원서 작성 시 아래와 같이 4가지 항목을 반드시 선택하도록 하였습니다.
+
+// 코딩테스트 참여 개발언어 항목에 cpp, java, python 중 하나를 선택해야 합니다.
+// 지원 직군 항목에 backend와 frontend 중 하나를 선택해야 합니다.
+// 지원 경력구분 항목에 junior와 senior 중 하나를 선택해야 합니다.
+// 선호하는 소울푸드로 chicken과 pizza 중 하나를 선택해야 합니다.
+// 인재영입팀에 근무하고 있는 니니즈는 코딩테스트 결과를 분석하여 채용에 참여한 개발팀들에 제공하기 위해 지원자들의 지원 조건을 선택하면 해당 조건에 맞는 지원자가 몇 명인 지 쉽게 알 수 있는 도구를 만들고 있습니다.
+// 예를 들어, 개발팀에서 궁금해하는 문의사항은 다음과 같은 형태가 될 수 있습니다.
+// 코딩테스트에 java로 참여했으며, backend 직군을 선택했고, junior 경력이면서, 소울푸드로 pizza를 선택한 사람 중 코딩테스트 점수를 50점 이상 받은 지원자는 몇 명인가?
+
+// 물론 이 외에도 각 개발팀의 상황에 따라 아래와 같이 다양한 형태의 문의가 있을 수 있습니다.
+
+// 코딩테스트에 python으로 참여했으며, frontend 직군을 선택했고, senior 경력이면서, 소울푸드로 chicken을 선택한 사람 중 코딩테스트 점수를 100점 이상 받은 사람은 모두 몇 명인가?
+// 코딩테스트에 cpp로 참여했으며, senior 경력이면서, 소울푸드로 pizza를 선택한 사람 중 코딩테스트 점수를 100점 이상 받은 사람은 모두 몇 명인가?
+// backend 직군을 선택했고, senior 경력이면서 코딩테스트 점수를 200점 이상 받은 사람은 모두 몇 명인가?
+// 소울푸드로 chicken을 선택한 사람 중 코딩테스트 점수를 250점 이상 받은 사람은 모두 몇 명인가?
+// 코딩테스트 점수를 150점 이상 받은 사람은 모두 몇 명인가?
+// 즉, 개발팀에서 궁금해하는 내용은 다음과 같은 형태를 갖습니다.
+
+// * [조건]을 만족하는 사람 중 코딩테스트 점수를 X점 이상 받은 사람은 모두 몇 명인가?
+// [문제]
+// 지원자가 지원서에 입력한 4가지의 정보와 획득한 코딩테스트 점수를 하나의 문자열로 구성한 값의 배열 info, 개발팀이 궁금해하는 문의조건이 문자열 형태로 담긴 배열 query가 매개변수로 주어질 때,
+// 각 문의조건에 해당하는 사람들의 숫자를 순서대로 배열에 담아 return 하도록 solution 함수를 완성해 주세요.
+
+// [제한사항]
+// info 배열의 크기는 1 이상 50,000 이하입니다.
+// info 배열 각 원소의 값은 지원자가 지원서에 입력한 4가지 값과 코딩테스트 점수를 합친 "개발언어 직군 경력 소울푸드 점수" 형식입니다.
+// 개발언어는 cpp, java, python 중 하나입니다.
+// 직군은 backend, frontend 중 하나입니다.
+// 경력은 junior, senior 중 하나입니다.
+// 소울푸드는 chicken, pizza 중 하나입니다.
+// 점수는 코딩테스트 점수를 의미하며, 1 이상 100,000 이하인 자연수입니다.
+// 각 단어는 공백문자(스페이스 바) 하나로 구분되어 있습니다.
+// query 배열의 크기는 1 이상 100,000 이하입니다.
+// query의 각 문자열은 "[조건] X" 형식입니다.
+// [조건]은 "개발언어 and 직군 and 경력 and 소울푸드" 형식의 문자열입니다.
+// 언어는 cpp, java, python, - 중 하나입니다.
+// 직군은 backend, frontend, - 중 하나입니다.
+// 경력은 junior, senior, - 중 하나입니다.
+// 소울푸드는 chicken, pizza, - 중 하나입니다.
+// '-' 표시는 해당 조건을 고려하지 않겠다는 의미입니다.
+// X는 코딩테스트 점수를 의미하며 조건을 만족하는 사람 중 X점 이상 받은 사람은 모두 몇 명인 지를 의미합니다.
+// 각 단어는 공백문자(스페이스 바) 하나로 구분되어 있습니다.
+// 예를 들면, "cpp and - and senior and pizza 500"은 "cpp로 코딩테스트를 봤으며, 경력은 senior 이면서 소울푸드로 pizza를 선택한 지원자 중 코딩테스트 점수를 500점 이상 받은 사람은 모두 몇 명인가?"를 의미합니다.
+// [입출력 예]
+// info
+// ["java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"]
+// query
+// ["java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"]
+// result
+// [1,1,1,1,2,4]
+
+// ---------------------------------------------------------------------------------------------------- //
+
+// 중첩루프는 해결했으나 아직 효율성 테스트는 통과가 안되는 코드.
 function solution(info, query) {
-  info = info.map((str) => str.split(" "));
-  // info = info.sort((a,b) => a[a.length-1] - b[b.length-1]);
+  const table = {};
+  // info 모든 경우의 수에 대해 점수를 table에 key : value로 입력해준다.
+  info.map((infoEl) => {
+    const arrInfo = infoEl.split(" ");
+    const score = arrInfo.pop();
+    let [lang, role, career, food] = [arrInfo];
+    lang = [lang, "-"];
+    role = [role, "-"];
+    career = [career, "-"];
+    food = [food, "-"];
 
-  const lang = ["java", "python", "cpp"];
-  const role = ["frontend", "backend"];
-  const career = ["junior", "senior"];
-  const food = ["chicken", "pizza"];
-  // const SCORE = "score"
-  // const searchTable = {};
-
-  lang.map((langEl) => {
-    searchTable[langEl] = {};
-  });
-
-  role.map((roleEl) => {
     lang.map((langEl) => {
-      searchTable[langEl][SCORE] = [];
-      searchTable[langEl][roleEl] = {};
-    });
-  });
-
-  career.map((careerEl) => {
-    role.map((roleEl) => {
-      lang.map((langEl) => {
-        searchTable[langEl][roleEl][SCORE] = [];
-        searchTable[langEl][roleEl][careerEl] = {};
-      });
-    });
-  });
-
-  food.map((foodEl) => {
-    career.map((careerEl) => {
       role.map((roleEl) => {
-        lang.map((langEl) => {
-          searchTable[langEl][roleEl][careerEl][SCORE] = [];
-          searchTable[langEl][roleEl][careerEl][foodEl] = { score: [] };
+        career.map((careerEl) => {
+          food.map((foodEl) => {
+            const infoStr = langEl + roleEl + careerEl + foodEl;
+            if (!table[infoStr]) table[infoStr] = [];
+            table[infoStr].push(score);
+          });
         });
       });
     });
   });
 
-  for (let i = 0; i < info.length; i++) {
-    const infoLang = info[i][0];
-    const infoRole = info[i][1];
-    const infoCareer = info[i][2];
-    const infoFood = info[i][3];
-    const score = info[i][4];
+  // query를 str 변환하여 key값으로 테이블에서 값을 바로 찾을 수 있다.
+  return query.map((queryEl) => {
+    let queryAllScore = [];
+    let arrQuery = queryEl.split(" and ");
 
-    searchTable[infoLang][SCORE].push(score);
-    searchTable[infoLang][infoRole][SCORE].push(score);
-    searchTable[infoLang][infoRole][infoCareer][SCORE].push(score);
-    searchTable[infoLang][infoRole][infoCareer][infoFood][SCORE].push(score);
-  }
-  console.log(searchTable);
+    const lastOfQueryEL = arrQuery.pop().split(" ");
+    const baseScore = lastOfQueryEL[1];
+    arrQuery.push(lastOfQueryEL[0]);
+    const queryStr = arrQuery.join("");
 
-  // 효율성을 고려하지않고 짠 코드 당연히 효율성 테스트에서는 시간초과다.
-  const result = query.map((str) => {
-    const arrQuery = str.split(" ");
-    return info
-      .filter((el) => {
-        if (arrQuery[0] === "-") {
-          return lang.map((langEl) => {
-            if (el[0] === langEl) return true;
-          });
-        } else return el[0] === arrQuery[0];
-      })
-      .filter((el) => {
-        if (arrQuery[2] === "-") {
-          return role.map((roleEl) => {
-            if (el[1] === roleEl) return true;
-          });
-        } else return el[1] === arrQuery[2];
-      })
-      .filter((el) => {
-        if (arrQuery[4] === "-") {
-          return career.map((careerEl) => {
-            if (el[2] === careerEl) return true;
-          });
-        } else return el[2] === arrQuery[4];
-      })
-      .filter((el) => {
-        if (arrQuery[6] === "-") {
-          return food.map((foodEl) => {
-            if (el[3] === foodEl) return true;
-          });
-        } else return el[3] === arrQuery[6];
-      })
-      .filter((el) => Number(el[4]) >= Number(arrQuery[7])).length;
+    const scoreOfQuery = table[queryStr];
+    if (!!scoreOfQuery) queryAllScore = [...queryAllScore, ...scoreOfQuery];
+
+    return queryAllScore.filter(
+      (score) => parseInt(score) >= parseInt(baseScore)
+    ).length;
   });
-  return result;
 }
+
+// try 2)
+//   // 효율성을 고려하지않고 테스트케이스 통과만을 확인해보기 위해 짠 코드 당연히 효율성 테스트에서는 시간초과다.
+// function solution(info, query) {
+//   info = info.map((str) => str.split(" "));
+//   // info = info.sort((a,b) => a[a.length-1] - b[b.length-1]);
+
+//   const lang = ["java", "python", "cpp"];
+//   const role = ["frontend", "backend"];
+//   const career = ["junior", "senior"];
+//   const food = ["chicken", "pizza"];
+
+//   const result = query.map((str) => {
+//     const arrQuery = str.split(" ");
+//     return info
+//       .filter((el) => {
+//         if (arrQuery[0] === "-") {
+//           return lang.map((langEl) => {
+//             if (el[0] === langEl) return true;
+//           });
+//         } else return el[0] === arrQuery[0];
+//       })
+//       .filter((el) => {
+//         if (arrQuery[2] === "-") {
+//           return role.map((roleEl) => {
+//             if (el[1] === roleEl) return true;
+//           });
+//         } else return el[1] === arrQuery[2];
+//       })
+//       .filter((el) => {
+//         if (arrQuery[4] === "-") {
+//           return career.map((careerEl) => {
+//             if (el[2] === careerEl) return true;
+//           });
+//         } else return el[2] === arrQuery[4];
+//       })
+//       .filter((el) => {
+//         if (arrQuery[6] === "-") {
+//           return food.map((foodEl) => {
+//             if (el[3] === foodEl) return true;
+//           });
+//         } else return el[3] === arrQuery[6];
+//       })
+//       .filter((el) => Number(el[4]) >= Number(arrQuery[7])).length;
+//   });
+//   return result;
+// }
+
+// ---------------------------------------------------------------------------------------------------- //
+
+// try1)
+/*
+  처음 문제를 보고 info의 길이가 50000, query의 길이 1000000 이기때문에 중첩루프로는 풀수 없다 판단하고 생각했던 방식. 
+  info를 먼저 순회하면서 지원자의 정보를 해시를 통해 정리를 하고 query문에 해당하는 내용을 O(1)로 검색해서 찾을 수 있는 방식으로 접근
+ */
+
+// const SCORE = "score"
+// const searchTable = {};
+
+// lang.map((langEl) => {
+//   searchTable[langEl] = {};
+// });
+
+// role.map((roleEl) => {
+//   lang.map((langEl) => {
+//     searchTable[langEl][SCORE] = [];
+//     searchTable[langEl][roleEl] = {};
+//   });
+// });
+
+// career.map((careerEl) => {
+//   role.map((roleEl) => {
+//     lang.map((langEl) => {
+//       searchTable[langEl][roleEl][SCORE] = [];
+//       searchTable[langEl][roleEl][careerEl] = {};
+//     });
+//   });
+// });
+
+// food.map((foodEl) => {
+//   career.map((careerEl) => {
+//     role.map((roleEl) => {
+//       lang.map((langEl) => {
+//         searchTable[langEl][roleEl][careerEl][SCORE] = [];
+//         searchTable[langEl][roleEl][careerEl][foodEl] = { score: [] };
+//       });
+//     });
+//   });
+// });
+
+// for (let i = 0; i < info.length; i++) {
+//   const infoLang = info[i][0];
+//   const infoRole = info[i][1];
+//   const infoCareer = info[i][2];
+//   const infoFood = info[i][3];
+//   const score = info[i][4];
+
+//   searchTable[infoLang][SCORE].push(score);
+//   searchTable[infoLang][infoRole][SCORE].push(score);
+//   searchTable[infoLang][infoRole][infoCareer][SCORE].push(score);
+//   searchTable[infoLang][infoRole][infoCareer][infoFood][SCORE].push(score);
+// }
