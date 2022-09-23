@@ -65,6 +65,8 @@
 
 */
 
+// 보드판을 굳이 다시 되돌릴 필요가 없어서 회전, 반전시켜서 간편하게 처리하도록 수정
+
 function solution(m, n, board) {
   let queue = [];
   let count = 0;
@@ -77,13 +79,24 @@ function solution(m, n, board) {
   ];
   board = board.map((el) => el.split(""));
 
-  // 하나의 블록을 기준으로 아래, 오른쪽대각선, 오른쪽 블록이 같은 블록이면 해당 블록들의 좌표를 반환
+  // 보드판을 90도 회전 및 반전시킨다.
+  let newBoard = new Array(n).fill(0).map((el) => new Array(m).fill(0));
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      newBoard[i][j] = board[j][i];
+    }
+  }
+
+  newBoard = newBoard.map((el) => el.reverse());
+
+  // 4개 인접한 블럭의 위치를 반환하는 함수
   const getPosition = (i, j) => {
     const blocks = [];
     const positions = [];
     dir.map((el) => {
       const [ny, nx] = el;
-      blocks.push(board[i + ny][j + nx]);
+      blocks.push(newBoard[i + ny][j + nx]);
       positions.push([i + ny, j + nx]);
     });
     const firstBlock = blocks[0];
@@ -91,52 +104,37 @@ function solution(m, n, board) {
     return [];
   };
 
-  // 블록의 제거가 발생하지 않으면 while문 중단
+  // board를 확인했을때 블록의 제거가 발생하지 않으면 while문 중단
   while (count !== preCount) {
     preCount = count;
 
     // board 전체를 확인하여 같은 블록 4개가 있다면 해당 좌표를 queue에 넣는다.
-    for (let i = 0; i < m - 1; i++) {
-      for (let j = 0; j < n - 1; j++) {
-        if (board[i][j]) {
+    for (let i = 0; i < n - 1; i++) {
+      for (let j = 0; j < m - 1; j++) {
+        if (newBoard[i][j]) {
           queue.push(...getPosition(i, j));
         }
       }
     }
 
-    // queue에 담긴 블록을 제거하고 queue 초기화 (이미 제거된 블록이라면 카운트 하지 않는다)
+    // 같은 블록 제거하고 queue 초기화 (이미 제거된 블록이라면 카운트 하지 않는다)
     queue.map((el) => {
       const [y, x] = el;
-      if (board[y][x]) {
-        board[y][x] = false;
+      if (newBoard[y][x]) {
+        newBoard[y][x] = false;
         count++;
       }
     });
     queue = [];
 
-    // 보드판을 90도 회전시킨다.
-    let newBoard = new Array(n).fill(0).map((el) => new Array(m).fill(0));
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < m; j++) {
-        newBoard[i][j] = board[j][i];
-      }
-    }
-
-    // 제거된 블록의 공간을 왼쪽으로 전부 옮긴다.
+    // 제거된 블록의 공간을 오른쪽으로 옮긴다.
     newBoard = newBoard.map((el) => {
       const restBlock = el.filter((block) => block !== false);
-      for (let i = restBlock.length; i < m; i++) {
-        restBlock.unshift(false);
+      for (let i = restBlock.length; i < n; i++) {
+        restBlock.push(false);
       }
       return restBlock;
     });
-
-    // 보드판을 다시 되돌린다.
-    for (let i = 0; i < m; i++) {
-      for (let j = 0; j < n; j++) {
-        board[i][j] = newBoard[j][i];
-      }
-    }
   }
 
   return count;
