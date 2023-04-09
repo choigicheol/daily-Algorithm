@@ -36,22 +36,87 @@ function solution(n, k, enemy) {
   let answer = 0;
   if (enemy.length <= k) return enemy.length;
 
-  const queue = [];
+  const queue = [Infinity];
+
+  class MaxHeap {
+    constructor() {
+      this.heap = [null];
+    }
+
+    swap(a, b) {
+      [this.heap[a], this.heap[b]] = [this.heap[b], this.heap[a]];
+    }
+
+    size() {
+      return this.heap.length - 1;
+    }
+
+    empty() {
+      return this.size() === 0;
+    }
+
+    push(value) {
+      this.heap.push(value);
+      let cur = this.heap.length - 1;
+      let par = Math.floor(cur / 2);
+
+      while (par > 0 && this.heap[par] < value) {
+        this.swap(cur, par);
+        cur = par;
+        par = Math.floor(cur / 2);
+      }
+    }
+
+    pop() {
+      if (this.empty()) {
+        return 0;
+      }
+      if (this.size() === 1) {
+        return this.heap.pop();
+      }
+      let returnValue = this.heap[1];
+      this.heap[1] = this.heap.pop();
+
+      let cur = 1;
+      let left = 2;
+      let right = 3;
+
+      while (
+        this.heap[cur] < this.heap[left] ||
+        this.heap[cur] < this.heap[right]
+      ) {
+        if (this.heap[left] < this.heap[right]) {
+          this.swap(cur, right);
+          cur = right;
+        } else {
+          this.swap(cur, left);
+          cur = left;
+        }
+        left = cur * 2;
+        right = cur * 2 + 1;
+      }
+
+      return returnValue;
+    }
+  }
 
   for (let i = 0; i < enemy.length; i++) {
     n -= enemy[i];
     queue.push(enemy[i]);
-    if (n >= 0) {
-      answer++;
-    } else if (n < 0 && k > 0) {
+
+    // 병사가 부족하고 방어권이 없으면 게임오버
+    if (n < 0 && k === 0) return answer;
+    // 병사가 부족하지만 방어권이 있다면
+    if (n < 0 && k > 0) {
+      // 방어권을 쓴다
       k--;
+      // 이번턴을 포함 모든 턴 중에 제일 큰 적을 찾아 방어권을 쓰고 그만큼 n(내 병사)을 회복시켜준다
       const bigEnemy = Math.max(...queue);
       n += bigEnemy;
+      // 방어권을 쓴 턴의 적을 queue에서 삭제한다.
       queue.splice(queue.indexOf(bigEnemy), 1);
-      answer++;
-    } else {
-      return answer;
     }
+    answer++;
   }
   return answer;
 }
