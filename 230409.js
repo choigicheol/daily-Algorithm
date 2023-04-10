@@ -36,8 +36,7 @@ function solution(n, k, enemy) {
   let answer = 0;
   if (enemy.length <= k) return enemy.length;
 
-  const queue = [Infinity];
-
+  // 최대 힙을 이용해 배열에서 최대값을 빨리 찾을 수 있다.
   class MaxHeap {
     constructor() {
       this.heap = [null];
@@ -100,23 +99,90 @@ function solution(n, k, enemy) {
     }
   }
 
+  const heap = new MaxHeap();
+
   for (let i = 0; i < enemy.length; i++) {
     n -= enemy[i];
-    queue.push(enemy[i]);
-
-    // 병사가 부족하고 방어권이 없으면 게임오버
-    if (n < 0 && k === 0) return answer;
-    // 병사가 부족하지만 방어권이 있다면
-    if (n < 0 && k > 0) {
-      // 방어권을 쓴다
-      k--;
-      // 이번턴을 포함 모든 턴 중에 제일 큰 적을 찾아 방어권을 쓰고 그만큼 n(내 병사)을 회복시켜준다
-      const bigEnemy = Math.max(...queue);
-      n += bigEnemy;
-      // 방어권을 쓴 턴의 적을 queue에서 삭제한다.
-      queue.splice(queue.indexOf(bigEnemy), 1);
+    heap.push(enemy[i]);
+    // 병사가 부족할 때
+    if (n < 0) {
+      // 방어권이 없으면 게임오버
+      if (k === 0) return answer;
+      // 방어권이 있다면
+      else {
+        // 방어권을 쓴다
+        k--;
+        // 모든 턴 중에 제일 큰 적에서 방어권을 썼다고하고 그만큼 n(내 병사)을 회복시켜준다.
+        const bigEnemy = heap.pop();
+        n += bigEnemy;
+      }
     }
+
+    // 병사가 부족하지않다면 라운드를 이어나간다.
     answer++;
   }
   return answer;
 }
+
+// 최소 힙
+// class MinHeap {
+//   constructor() {
+//     this.heap = [null];
+//   }
+
+//   size() {
+//     return this.heap.length - 1;
+//   }
+
+//   getMin() {
+//     return this.heap[1] ? this.heap[1] : null;
+//   }
+
+//   swap(a, b) {
+//     [this.heap[a], this.heap[b]] = [this.heap[b], this.heap[a]];
+//   }
+
+//   push(value) {
+//     this.heap.push(value);
+//     let curIdx = this.heap.length - 1;
+//     let parIdx = (curIdx / 2) >> 0;
+
+//     while (curIdx > 1 && this.heap[parIdx] > this.heap[curIdx]) {
+//       this.swap(parIdx, curIdx);
+//       curIdx = parIdx;
+//       parIdx = (curIdx / 2) >> 0;
+//     }
+//   }
+
+//   pop() {
+//     const returnValue = this.heap[1];
+//     if (this.heap.length <= 2) this.heap = [null];
+//     else this.heap[1] = this.heap.pop();
+
+//     let cur = 1;
+//     let left = cur * 2;
+//     let right = cur * 2 + 1;
+
+//     if (!this.heap[left]) return returnValue;
+//     if (!this.heap[right]) {
+//       if (this.heap[left] < this.heap[cur]) {
+//         this.swap(left, cur);
+//       }
+//       return returnValue;
+//     }
+
+//     while (
+//       this.heap[left] < this.heap[cur] ||
+//       this.heap[right] < this.heap[cur]
+//     ) {
+//       const minIdx =
+//         this.heap[left] > this.heap[right] ? right : left;
+//       this.swap(minIdx, cur);
+//       cur = minIdx;
+//       left = cur * 2;
+//       right = cur * 2 + 1;
+//     }
+
+//     return returnValue;
+//   }
+// }
