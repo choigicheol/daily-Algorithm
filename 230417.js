@@ -52,7 +52,7 @@ let array = [1, 3, 3, -2, 3, 14, 7, 8, 1, 2, 2];
 // 예를 들면 중간값을 pivot으로 두고 left에 pivot보다 작은값 right에 pivot보다 큰값으로 나눈다
 // 찾고자하는 순위의 값(k)이 pivot보다 작은값이면 left에서만 찾으면 되고
 // 찾고자하는 순위의 값(k)이 pivot보다 큰값이면 right에서만 찾으면 된다.
-console.log(quickSelectInPlace(array, 0, array.length - 1, 10));
+// console.log(quickSelectInPlace(array, 0, array.length - 1, 10));
 
 // 중간값 찾기
 function medianQuickSelect(array) {
@@ -64,4 +64,54 @@ function medianQuickSelect(array) {
   );
 }
 
+// 시간복잡도 O(n)
+
 // ---------------------------------------------------------------------------------------
+
+// mergeSort
+// 재귀적으로 배열의 중간인덱스를 구해 left, right 반반 나눈다
+// 반반 나누어진 배열을 재귀를 통해 더이상 나눠지지 않을때까지 나눈다
+// 배열의 길이가 1이면 항목이 하나 뿐이라서 이미 정렬된 것이라고 볼 수 있다.
+// while문을 통해
+// left배열과 right배열을 비교한다
+// left[0]보다 right[0]이 더 크다면
+// result 배열에 left[0]을 push 하고 left의 인덱스를 하나 늘려준다.
+// 그 외의 경우에는
+// result 배열에 right[0]을 push 하고 right의 인덱스를 하나 늘려준다.
+// 모든 비교가 끝나면 각각의 배열을 index만큼 slice 해준다.
+// result배열 - 복사한 left 배열 - 복사한 right 배열 순으로 concat 해준다.
+
+function merge(leftArr, rightArr) {
+  let results = [],
+    leftIndex = 0,
+    rightIndex = 0;
+
+  while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
+    if (leftArr[leftIndex] < rightArr[rightIndex]) {
+      results.push(leftArr[leftIndex++]);
+    } else {
+      results.push(rightArr[rightIndex++]);
+    }
+  }
+
+  let leftRemains = leftArr.slice(leftIndex);
+  let rightRemains = rightArr.slice(rightIndex);
+
+  return results.concat(leftRemains).concat(rightRemains);
+}
+
+function mergeSort(array) {
+  if (array.length < 2) {
+    return array;
+  }
+  let midpoint = Math.floor(array.length / 2);
+  let leftArray = array.slice(0, midpoint);
+  let rightArray = array.slice(midpoint);
+
+  return merge(mergeSort(leftArray), mergeSort(rightArray));
+}
+
+console.log(mergeSort([6, 1, 23, 4, 2, 3, 7, 4, 9, 56, 44]));
+
+// 시간복잡도는 O(nLog(n))
+// 공간복잡도는 O(n)
