@@ -38,49 +38,49 @@
 // E=M*C^2	e=m*c^2	65536
 
 function solution(str1, str2) {
-  let answer = 0;
-  const set1 = [];
-  const set2 = [];
+    let answer = 0;
+    const set1 = [];
+    const set2 = [];
 
-  // 모두 소문자로 변환
-  str1 = str1.toLowerCase();
-  str2 = str2.toLowerCase();
+    // 모두 소문자로 변환
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
 
-  // 알파벳으로 이뤄진 단어만 집합에 포함한다.
-  const addSetElement = (setArr, str) => {
-    const regExp = new RegExp(`^[a-z]+$`);
-    for (let i = 0; i < str.length - 1; i++) {
-      const word = str[i] + str[i + 1];
-      if (regExp.test(word)) setArr.push(word);
+    // 알파벳으로 이뤄진 단어만 집합에 포함한다.
+    const addSetElement = (setArr, str) => {
+        const regExp = new RegExp(`^[a-z]+$`);
+        for (let i = 0; i < str.length - 1; i++) {
+            const word = str[i] + str[i + 1];
+            if (regExp.test(word)) setArr.push(word);
+        }
+    };
+
+    addSetElement(set1, str1);
+    addSetElement(set2, str2);
+
+    // 두개의 집합이 모두 공집합이라면 J(A, B) = 1 이므로 65536을 바로 return 한다.
+    if (!set1.length && !set2.length) return 65536;
+
+    // intersection  = 교집합
+    const intersection = [];
+    const copySet1 = [...set1];
+
+    for (let i = 0; i < set1.length; i++) {
+        const elementOfSet1 = set1[i];
+        const indexSet1 = copySet1.indexOf(elementOfSet1);
+        const indexSet2 = set2.indexOf(elementOfSet1);
+
+        if (indexSet2 !== -1) {
+            copySet1.splice(indexSet1, 1);
+            intersection.push(...set2.splice(indexSet2, 1));
+        }
     }
-  };
+    // sumOfSet = 합집합;
+    // 합집합은 두개의 집합에서 공통 원소를 제외시킨 A의원소 + B의 원소 + 교집합의 원소로 구하였다.
+    // ex) A = [1,1,2], B = [1,2,3] => 교집합 [1,2]를 제외한 A = [1], B = [3]과 교집합을 합쳐 [1,1,2,3]
+    const sumOfSet = [...copySet1, ...set2, ...intersection];
 
-  addSetElement(set1, str1);
-  addSetElement(set2, str2);
+    answer = intersection.length / sumOfSet.length;
 
-  // 두개의 집합이 모두 공집합이라면 J(A, B) = 1 이므로 65536을 바로 return 한다.
-  if (!set1.length && !set2.length) return 65536;
-
-  // intersection  = 교집합
-  const intersection = [];
-  const copySet1 = [...set1];
-
-  for (let i = 0; i < set1.length; i++) {
-    const elementOfSet1 = set1[i];
-    const indexSet1 = copySet1.indexOf(elementOfSet1);
-    const indexSet2 = set2.indexOf(elementOfSet1);
-
-    if (indexSet2 !== -1) {
-      copySet1.splice(indexSet1, 1);
-      intersection.push(...set2.splice(indexSet2, 1));
-    }
-  }
-  // sumOfSet = 합집합;
-  // 합집합은 두개의 집합에서 공통 원소를 제외시킨 A의원소 + B의 원소 + 교집합의 원소로 구하였다.
-  // ex) A = [1,1,2], B = [1,2,3] => 교집합 [1,2]를 제외한 A = [1], B = [3]과 교집합을 합쳐 [1,1,2,3]
-  const sumOfSet = [...copySet1, ...set2, ...intersection];
-
-  answer = intersection.length / sumOfSet.length;
-
-  return Math.floor(answer * 65536);
+    return Math.floor(answer * 65536);
 }
